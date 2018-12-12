@@ -1,0 +1,47 @@
+language: cpp
+
+sudo: required
+
+services:
+    - docker
+
+os:
+    - linux
+
+env:
+    global:
+        - OJDK_DEBUG_LEVEL=release
+        - OJDK_MILESTONE=ojdkbuild
+
+before_install:
+    - set -e
+    - export OJDK_TAG=`git describe --exact-match --tags HEAD`
+    - export OJDK_UPDATE=`echo ${OJDK_TAG} | sed 's/-/ /' | awk '{print substr($1,6)}'`
+    - export OJDK_BUILD=`echo ${OJDK_TAG} | sed 's/-/ ' | awk '{print substr($2,2)}'`
+    - export OJDK_IMAGE=jdk-8u${OJDK_UPDATE}-${OJDK_BUILD}-linux-x64
+    - export D="docker exec builder"
+    - docker pull centos:7.5.1804
+    - docker run
+                -id
+                --name builder
+                -w /opt
+                -v `pwd`:/mnt/app
+                centos:7.5.1804
+
+install:
+    - $D yum groupinstall -y 'Development Tools'
+    - $D yum install -y 
+            java-1.7.0-openjdk-devel.x86_64 
+            mercurial 
+            which 
+            libXtst-devel 
+            libXt-devel 
+            libXrender-devel 
+            cups-devel 
+            freetype-devel 
+            alsa-lib-devel 
+            elfutils 
+            libstdc++-static file
+
+script:
+    - $D /bin/bash /mnt/app/build.sh
