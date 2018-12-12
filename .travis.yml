@@ -50,7 +50,7 @@ deploy:
     provider: releases
     skip_cleanup: true
     api_key:
-        secure: 486763f1df60dc29f7ec75d37b1e0671b3915d35
+        secure: ${GH_TOKEN}
     file:
         - ${OJDK_IMAGE}.zip
         - ${OJDK_IMAGE}.zip.sha256
